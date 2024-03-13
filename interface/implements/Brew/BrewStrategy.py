@@ -4,7 +4,7 @@ import httpx
 from dacite import from_dict
 
 from interface.AppVersionStrategy import AppVersionStrategy
-from lib.apputil import get_final_url
+from lib.apputil import get_final_url, get_version_from_brew_url_info
 from lib.sysutil import get_system_info
 from type.index import AppStoreAppInfo, BrewUrlInfo
 
@@ -17,15 +17,20 @@ class BrewStrategy(AppVersionStrategy):
 
         brew_url_info = from_dict(data_class=BrewUrlInfo, data=brew_json)
 
-        system_info = get_system_info()
-
         url_info = None
-        if system_info.architecture == 'Intel':
+
+        if brew_url_info.variations.arm64_sonoma is None:
             url_info = get_final_url(brew_url_info.url)
+        else:
+            system_info = get_system_info()
 
-        if system_info.architecture == 'ARM':
-            url_info = get_final_url(brew_url_info.variations.arm64_sonoma.url)
+            if system_info.architecture == 'Intel':
+                url_info = get_final_url(brew_url_info.url)
 
-        return AppStoreAppInfo(old_version_info.showVersion, brew_url_info.version, url_info.lastModified,
+            if system_info.architecture == 'ARM':
+                url_info = get_final_url(brew_url_info.variations.arm64_sonoma.url)
+
+        real_version = get_version_from_brew_url_info(brew_url_info, old_version_info.appName)
+        return AppStoreAppInfo(old_version_info.showVersion, real_version, url_info.lastModified,
                                url_info.realDownloadUrl,
-                               brew_url_info.version != old_version_info.compareVersion)
+                               real_version != old_version_info.compareVersion)

@@ -17,6 +17,7 @@ class OldVersionInfo:
     # for react.js
     showVersion: str
     compareVersion: str
+    appName: str
 
 
 @dataclass
@@ -28,11 +29,12 @@ class DownloadUrlInfo:
 @dataclass
 class Arm64Sonoma:
     url: str
+    version: Optional[str] = None
 
 
 @dataclass
 class Variations:
-    arm64_sonoma: Arm64Sonoma
+    arm64_sonoma: Optional[Arm64Sonoma] = None
 
 
 @dataclass

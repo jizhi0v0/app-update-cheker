@@ -9,6 +9,7 @@ from interface.implements.DingTalk.DingTalkStrategy import DingTalkStrategy
 from lib import checkutil
 from lib import apputil
 from interface.AppVersionStrategy import get_app_info
+from lib.apputil import transform_string, generate_url, get_final_url
 from type.index import OldVersionInfo
 
 init(autoreset=True)
@@ -28,10 +29,12 @@ with open('config/app_to_link_mapping_official.json', 'r') as app_to_link_offici
 with open('config/app_to_link_mapping_brew.json', 'r') as app_to_link_brew_file:
     app_to_link_brew_mapping = json.load(app_to_link_brew_file)
 
+old_version_info = None
+
 
 def get_old_version_info():
     global old_version_info
-    old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
+    old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version, appName=app_name)
 
 
 for file in file_list:
@@ -47,18 +50,19 @@ for file in file_list:
     plist_json = apputil.read_info_plist(content_path, 'Info.plist')
     wrapper_json = apputil.read_info_plist(wrapper_content, 'iTunesMetadata.plist')
     if plist_json is not None:
-        old_version = plist_json.get('CFBundleShortVersionString', 'unknown_version')
+        old_version = plist_json.get('CFBundleShortVersionString', '')
+        if old_version == '':
+            old_version = plist_json.get('CFBundleVersion', 'unknown_version')
     else:
         old_version = wrapper_json.get('bundleShortVersionString', 'unknown_version')
 
-    old_version_info = None
     strategy = None
     link = None
     compare_version = old_version
     if is_app_store_app or is_wrapper_app:
         if app_name in app_to_link_mapping:
             strategy = AppStoreStrategy()
-            old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
+            get_old_version_info()
             link = app_to_link_mapping[app_name]
     else:
         if app_name in app_to_link_official_mapping:
@@ -72,7 +76,15 @@ for file in file_list:
             get_old_version_info()
             link = app_to_link_brew_mapping[app_name]
         else:
-            print(app_name, 'wait for support', old_version)
+            final_url = generate_url(app_name)
+            url_info = get_final_url(final_url)
+            if url_info is None:
+                # print(app_name, "doesn't have a brew source", final_url)
+                print(app_name, 'wait for support', old_version)
+            else:
+                strategy = BrewStrategy()
+                get_old_version_info()
+                link = final_url
 
     if strategy is not None and old_version_info is not None and link is not None:
         app_info = get_app_info(link=link, old_version_info=old_version_info,
