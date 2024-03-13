@@ -79,5 +79,6 @@ for file in file_list:
                                 strategy=strategy)
         if app_info.needUpdate:
             print(Fore.RED + (app_name + ' need update, ' + old_version + ' -> ' + app_info.latestVersion))
+            print('Click ', app_info.downloadUrl, 'to update')
         else:
             print(app_name, "doesn't need update")
