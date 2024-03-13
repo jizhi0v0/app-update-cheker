@@ -1,13 +1,17 @@
 import json
 import os
 
+from colorama import Fore, Back, Style, init
+
 from interface.implements.AppStore.AppStoreStrategy import AppStoreStrategy
+from interface.implements.Brew.BrewStrategy import BrewStrategy
 from interface.implements.DingTalk.DingTalkStrategy import DingTalkStrategy
-from interface.implements.Postman.PostmanStrategy import PostmanStrategy
 from lib import checkutil
 from lib import apputil
 from interface.AppVersionStrategy import get_app_info
 from type.index import OldVersionInfo
+
+init(autoreset=True)
 
 basePath = '/Applications/'
 file_list = os.listdir(basePath)
@@ -20,6 +24,15 @@ with open('config/app_to_link_mapping_appstore.json', 'r') as app_to_link_file:
 
 with open('config/app_to_link_mapping_official.json', 'r') as app_to_link_official_file:
     app_to_link_official_mapping = json.load(app_to_link_official_file)
+
+with open('config/app_to_link_mapping_brew.json', 'r') as app_to_link_brew_file:
+    app_to_link_brew_mapping = json.load(app_to_link_brew_file)
+
+
+def get_old_version_info():
+    global old_version_info
+    old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
+
 
 for file in file_list:
     if file in skip_list:
@@ -41,10 +54,11 @@ for file in file_list:
     old_version_info = None
     strategy = None
     link = None
+    compare_version = old_version
     if is_app_store_app or is_wrapper_app:
         if app_name in app_to_link_mapping:
             strategy = AppStoreStrategy()
-            old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=old_version)
+            old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
             link = app_to_link_mapping[app_name]
     else:
         if app_name in app_to_link_official_mapping:
@@ -52,17 +66,18 @@ for file in file_list:
             if "DingTalk" in app_name:
                 strategy = DingTalkStrategy()
                 compare_version = plist_json.get("buildNo")
-                old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
-            elif "Postman" in app_name:
-                strategy = PostmanStrategy()
-                compare_version = old_version
-                old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
+                get_old_version_info()
+        elif app_name in app_to_link_brew_mapping:
+            strategy = BrewStrategy()
+            get_old_version_info()
+            link = app_to_link_brew_mapping[app_name]
         else:
-            print(app_name, 'wait for support')
+            print(app_name, 'wait for support', old_version)
 
     if strategy is not None and old_version_info is not None and link is not None:
         app_info = get_app_info(link=link, old_version_info=old_version_info,
                                 strategy=strategy)
-        print(app_name, 'need update, the latest version is ' + app_info.latestVersion
-                        if app_info.needUpdate else "don't need update",
-                        ', your version is ' + app_info.oldVersion, app_info)
+        if app_info.needUpdate:
+            print(Fore.RED + (app_name + ' need update, ' + old_version + ' -> ' + app_info.latestVersion))
+        else:
+            print(app_name, "doesn't need update")

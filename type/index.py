@@ -36,7 +36,7 @@ class Variations:
 
 
 @dataclass
-class PostmanUrlInfo:
+class BrewUrlInfo:
     url: str
     version: str
     variations: Variations
