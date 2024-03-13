@@ -1,5 +1,3 @@
-import httpx
-
 from interface.AppVersionStrategy import AppVersionStrategy
 from lib.apputil import get_final_url
 from type.index import AppStoreAppInfo

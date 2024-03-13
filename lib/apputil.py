@@ -1,8 +1,7 @@
 import os
 import plistlib
-from lxml import etree
 import httpx
-from type.index import AppStoreAppInfo, DownloadUrlInfo
+from type.index import DownloadUrlInfo
 
 plist = 'Info.plist'
 
