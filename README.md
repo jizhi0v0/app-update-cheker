@@ -1,6 +1,8 @@
 It's a very simple implement. No framework. Just run 「python main.py」
 
-You can see the support apps in config folder.
+You can see the support apps in config folder.If u want to check more AppStore APPs, just edit config/app_to_link_mapping_appstore.json file
+
+Key is App name, value is the APP Store Link!
 
 I wrote this project because I always love checking apps for updates.
 
