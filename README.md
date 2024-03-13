@@ -8,4 +8,5 @@ I wrote this project because I always love checking apps for updates.
 
 Only output in terminal.There is a preview.
 
-![CleanShot 2024-03-13 at 13 56 04@2x](https://github.com/jizhi0v0/app-update-cheker/assets/57976101/81092b04-35c5-468c-b3a2-20e5bdbf289f)
+![CleanShot 2024-03-13 at 15 59 09@2x](https://github.com/jizhi0v0/app-update-cheker/assets/57976101/1ce9c438-dac1-45ed-a846-5816e209de60)
+
