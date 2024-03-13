@@ -23,3 +23,27 @@ class OldVersionInfo:
 class DownloadUrlInfo:
     lastModified: str
     realDownloadUrl: str
+
+
+@dataclass
+class Arm64Sonoma:
+    url: str
+
+
+@dataclass
+class Variations:
+    arm64_sonoma: Arm64Sonoma
+
+
+@dataclass
+class PostmanUrlInfo:
+    url: str
+    version: str
+    variations: Variations
+
+
+@dataclass
+class SystemInfo:
+    os_type: str
+    architecture: str
+

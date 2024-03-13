@@ -3,6 +3,7 @@ import os
 
 from interface.implements.AppStore.AppStoreStrategy import AppStoreStrategy
 from interface.implements.DingTalk.DingTalkStrategy import DingTalkStrategy
+from interface.implements.Postman.PostmanStrategy import PostmanStrategy
 from lib import checkutil
 from lib import apputil
 from interface.AppVersionStrategy import get_app_info
@@ -47,11 +48,15 @@ for file in file_list:
             link = app_to_link_mapping[app_name]
     else:
         if app_name in app_to_link_official_mapping:
+            link = app_to_link_official_mapping[app_name]
             if "DingTalk" in app_name:
                 strategy = DingTalkStrategy()
                 compare_version = plist_json.get("buildNo")
                 old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
-                link = app_to_link_official_mapping[app_name]
+            elif "Postman" in app_name:
+                strategy = PostmanStrategy()
+                compare_version = old_version
+                old_version_info = OldVersionInfo(showVersion=old_version, compareVersion=compare_version)
         else:
             print(app_name, 'wait for support')
 
