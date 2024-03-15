@@ -38,9 +38,22 @@ def generate_url(input_str):
 
 
 def get_version_from_brew_url_info(data: BrewUrlInfo, app_name: str) -> str:
+    lower_case = app_name.lower()
     # customized logic
-    if 'bartender' in app_name.lower():
+    if 'bartender' in lower_case:
         return data.variations.arm64_sonoma.version
+    elif 'spotify' in lower_case:
+        return '.'.join(data.variations.arm64_sonoma.version.split(',', 2)[:2])
+    elif 'orbstack' in lower_case:
+        return data.version.split('_')[0]
+    elif 'virtualbox' in lower_case:
+        return data.version.split(',')[0]
+    elif 'surge' in lower_case:
+        return data.version.split(',')[0]
+    elif 'jetbrains toolbox' in lower_case:
+        return data.version.split(',')[1]
+    elif 'tableplus' in lower_case:
+        return data.version.split(',')[0]
     return data.version
 
 # print(get_final_url("https://formulae.brew.sh/api/cask/google-chrome.json1"))

@@ -6,7 +6,6 @@ import re
 
 class DingTalkStrategy(AppVersionStrategy):
     def get_version_info(self, link, old_version_info) -> "AppStoreAppInfo":
-        # 实现从Google Play获取版本信息的逻辑
 
         url_info = get_final_url(link)
 
